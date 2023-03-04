@@ -179,7 +179,7 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
             alive = false;
             break;
         }
-        if (mine_map[i][j] == 0) spread_virus(mine_map, player_map, i, j, m, n, countBox);
+        //if (mine_map[i][j] == 0) spread_virus(mine_map, player_map, i, j, m, n, countBox);
     }
     printMap(player_map, m, n);
     if (!alive) cout << "   YOU'RE DEAD!";
