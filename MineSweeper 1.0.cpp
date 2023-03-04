@@ -160,7 +160,6 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
             printMap(player_map);
             cout << "Coordinate not valid, please enter again: ";
             cin >> i >> j;
-            cin.ignore(INT_MAX, '\n');
             cout << endl;
             system("cls");
         }
