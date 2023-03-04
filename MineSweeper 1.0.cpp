@@ -179,7 +179,7 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
             alive = false;
             break;
         }
-        //if (mine_map[i][j] == 0) spread_virus(mine_map, player_map, i, j, m, n, countBox);
+        if (mine_map[i][j] == 0) spread_virus(mine_map, player_map, i, j, m, n, countBox);
     }
     printMap(player_map, m, n);
     if (!alive) cout << "   YOU'RE DEAD!";
@@ -188,35 +188,33 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
 
 void SetWindowSize(SHORT width, SHORT height)
 {
-
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    SMALL_RECT WindowSize;
+    static SMALL_RECT WindowSize;
     WindowSize.Top = 0;
     WindowSize.Left = 0;
     WindowSize.Right = width;
     WindowSize.Bottom = height;
 
-    SetConsoleWindowInfo(hStdout, 1, &WindowSize);
+    SetConsoleWindowInfo(hStdout, true, &WindowSize);
 
-    COORD NewSize;
-    NewSize.X = width+1;
-    NewSize.Y = height+1;
+    static COORD NewSize;
+    NewSize.X = width+10;
+    NewSize.Y = height+20;
     SetConsoleScreenBufferSize(hStdout, NewSize);
 
     static CONSOLE_FONT_INFOEX  fontex;
     fontex.cbSize = sizeof(CONSOLE_FONT_INFOEX);
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetCurrentConsoleFontEx(hOut, 0, &fontex);
+    GetCurrentConsoleFontEx(hStdout, false, &fontex);
     fontex.FontWeight = 700;
     fontex.dwFontSize.X = 30;
     fontex.dwFontSize.Y = 30;
-    SetCurrentConsoleFontEx(hOut, true, &fontex);
+    SetCurrentConsoleFontEx(hStdout, false, &fontex);
 }
 
 int main()
 {
-    SetWindowSize(60, 40);
+    SetWindowSize(20*4 + 6, 10 * 2 + 4);
     int m, n ,k;
     getData(m, n, k);
 
