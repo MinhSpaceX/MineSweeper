@@ -149,11 +149,13 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
     bool alive = true;
     int countBox = n*m - k;
     while(countBox){
+        cout << countBox << endl;
         printMap(player_map);
         cout << "Enter a coordinate: ";
         int i, j;
         cin >> i >> j;
         system("cls");
+
         while (cin.rdstate() == 4 || i < 0 || j < 0 || i >= m || j >= n || player_map[i][j] != "#"){
             cin.clear();
             cin.ignore(INT_MAX, '\n');
