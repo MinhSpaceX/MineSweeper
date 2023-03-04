@@ -8,39 +8,47 @@
 
 using namespace std;
 
-void CreateWindowFromConsole(SHORT width, SHORT height){
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    SMALL_RECT WindowSize;
-    WindowSize.Top = 0;
-    WindowSize.Left = 0;
-    WindowSize.Right = width;
-    WindowSize.Bottom = height;
-
-    COORD NewSize;
-    NewSize.X = width;
-    NewSize.Y = height;
-
-    SetConsoleScreenBufferSize(hStdout, NewSize);
-    SetConsoleWindowInfo(hStdout, 1, &WindowSize);
-}
-
 void getData(int& m, int& n, int& k){
     cout << "Enter matrix's rows: ";
     cin >> m;
+    cout << endl;
+    while(cin.rdstate() == 4){
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Not valid, please renter matrix's rows: ";
+        cin >> m;
+        cout << endl;
+    }
     cin.clear();
     cin.ignore(INT_MAX, '\n');
-    cout << endl;
+    system("cls");
+
     cout << "Enter matrix's columns: ";
     cin >> n;
+    cout << endl;
+    while(cin.rdstate() == 4){
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Not valid, please renter matrix's columns: ";
+        cin >> n;
+        cout << endl;
+    }
     cin.clear();
     cin.ignore(INT_MAX, '\n');
-    cout << endl;
+    system("cls");
+
     cout << "Enter number of bombs: ";
     cin >> k;
+    cout << endl;
+    while(cin.rdstate() == 4){
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        cout << "Not valid, please renter number of bombs: ";
+        cin >> k;
+        cout << endl;
+    }
     cin.clear();
     cin.ignore(INT_MAX, '\n');
-    cout << endl;
     system("cls");
 }
 
@@ -67,63 +75,110 @@ template <class T> void printMap(vector <vector<T>> arr){
         cout << endl << endl;
         counts++;
     }
+    cout << setw((arr[0].size()) * 4) << " " << "     "  << 'x';
     cout << endl;
     for (int i = 0; i < counts; i++) cout << setw(4) << i;
+    cout << setw(4) << 'y';
     cout << endl << endl;
 }
 
-bool IsAlive(vector <vector<int>>& mine_map,vector <vector<string>>& player_map , int i, int j){
+void open(vector <vector<int>>& mine_map, vector <vector<string>>& player_map , int i, int j, int& countBox){
     stringstream ss;
     ss << mine_map[i][j];
     ss >> player_map[i][j];
+    countBox--;
+}
+
+bool IsAlive(vector <vector<int>>& mine_map,vector <vector<string>>& player_map , int& i, int& j, int& countBox){
+    open(mine_map, player_map, i, j, countBox);
     if (mine_map[i][j] == -1) return false;
     return true;
 }
 
 void generateMap(vector<vector<int>>& mine_map, int& m, int& n, int& k){
     srand(time(NULL));
-    while (k){
+    int bombs = k;
+    while (bombs){
         int i = rand() % m , j = rand() % n;
         if (mine_map[i][j] != -1) {
             mine_map[i][j] = -1;
-            k--;
+            bombs--;
             addCount(mine_map, i, j, m, n);
         }
     }
 }
 
+void spread_virus(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int i, int j, int& m, int& n, int& countBox){
+    if (i-1 >= 0 && j-1 >= 0 && mine_map[i-1][j-1] != -1 && player_map[i-1][j-1] == "#"){
+        open(mine_map, player_map, i-1, j-1, countBox);
+        if (mine_map[i-1][j-1] == 0) spread_virus(mine_map, player_map, i-1, j-1, m, n, countBox);
+    }
+    if (i-1 >= 0 && mine_map[i-1][j] != -1 && player_map[i-1][j] == "#"){
+        open(mine_map, player_map, i-1, j, countBox);
+        if (mine_map[i-1][j] == 0) spread_virus(mine_map, player_map, i-1, j, m, n, countBox);
+    }
+    if (i-1 >= 0 && j+1 < n && mine_map[i-1][j+1] != -1 && player_map[i-1][j+1] == "#"){
+        open(mine_map, player_map, i-1, j+1, countBox);
+        if (mine_map[i-1][j+1] == 0) spread_virus(mine_map, player_map, i-1, j+1, m, n, countBox);
+    }
+    if (j-1 >= 0 && mine_map[i][j-1] != -1 && player_map[i][j-1] == "#"){
+        open(mine_map, player_map, i, j-1, countBox);
+        if (mine_map[i][j-1] == 0) spread_virus(mine_map, player_map, i, j-1, m, n, countBox);
+    }
+    if (j+1 < n && mine_map[i][j+1] != -1 && player_map[i][j+1] == "#"){
+        open(mine_map, player_map, i, j+1, countBox);
+        if (mine_map[i][j+1] == 0) spread_virus(mine_map, player_map, i, j+1, m, n, countBox);
+    }
+    if (i+1 < m && j-1 >= 0 && mine_map[i+1][j-1] != -1 && player_map[i+1][j-1] == "#"){
+        open(mine_map, player_map, i+1, j, countBox);
+        if (mine_map[i+1][j-1] == 0) spread_virus(mine_map, player_map, i+1, j-1, m, n, countBox);
+    }
+    if (i+1 < m && mine_map[i+1][j] != -1 && player_map[i+1][j] == "#"){
+        open(mine_map, player_map, i+1, j, countBox);
+        if (mine_map[i+1][j] == 0) spread_virus(mine_map, player_map, i+1, j, m, n, countBox);
+    }
+    if (i+1 < m && j+1 < n && mine_map[i+1][j+1] != -1 && player_map[i+1][j+1] == "#"){
+        open(mine_map, player_map, i+1, j+1, countBox);
+        if (mine_map[i+1][j+1] == 0) spread_virus(mine_map, player_map, i+1, j+1, m, n, countBox);
+    }
+
+
+}
+
 void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int& m, int& n, int& k){
     bool alive = true;
-    for (int box = 0; box < n*m-k; box++) {
+    int countBox = n*m - k;
+    while(countBox){
         printMap(player_map);
         cout << "Enter a coordinate: ";
         int i, j;
         cin >> i >> j;
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
         system("cls");
-        while (i < 0 || j < 0 || i-1 < 0 || j-1 < 0 || i+1 > m || j+1 > n || player_map[i][j] != "#"){
+        while (cin.rdstate() == 4 || i < 0 || j < 0 || i >= m || j >= n || player_map[i][j] != "#"){
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
             printMap(player_map);
             cout << "Coordinate not valid, please enter again: ";
             cin >> i >> j;
-            cin.clear();
             cin.ignore(INT_MAX, '\n');
             cout << endl;
             system("cls");
         }
-
-        if (!IsAlive(mine_map, player_map, i, j)){
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
+        if (!IsAlive(mine_map, player_map, i, j, countBox)){
             alive = false;
             break;
         }
+        //if (mine_map[i][j] == 0) spread_virus(mine_map, player_map, i, j, m, n, countBox);
     }
+    printMap(player_map);
     if (!alive) cout << "YOU'RE DEAD!";
     else cout << "YOU WON!";
 }
 
 int main()
 {
-    //CreateWindowFromConsole(50, 50);
     int m, n ,k;
     getData(m, n, k);
 
