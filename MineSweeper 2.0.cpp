@@ -94,12 +94,9 @@ template <class T>void printMap(vector <vector<T>> arr, int& m, int& n){
 
 void open(vector <vector<int>>& mine_map, vector <vector<string>>& player_map , int i, int j, int& countBox){
     stringstream ss;
-    //int m = 5, n = 6;
     ss << mine_map[i][j];
     ss >> player_map[i][j];
     countBox--;
-    //cout << "Open at: " << i << ' ' << j << " remain: " << countBox << endl;
-    //printMap(player_map, m, n);
 }
 
 bool IsAlive(vector <vector<int>>& mine_map,vector <vector<string>>& player_map , int& i, int& j, int& countBox){
@@ -201,20 +198,25 @@ void SetWindowSize(SHORT width, SHORT height)
     WindowSize.Bottom = height;
 
     SetConsoleWindowInfo(hStdout, 1, &WindowSize);
+
     COORD NewSize;
-    NewSize.X = width+1;
-    NewSize.Y = height+1;
+    NewSize.X = width+5;
+    NewSize.Y = height+5;
     SetConsoleScreenBufferSize(hStdout, NewSize);
 
-    CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize = sizeof(cfi);
-    cfi.dwFontSize.Y = 30;
-    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+    static CONSOLE_FONT_INFOEX  fontex;
+    fontex.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetCurrentConsoleFontEx(hOut, 0, &fontex);
+    fontex.FontWeight = 700;
+    fontex.dwFontSize.X = 30;
+    fontex.dwFontSize.Y = 30;
+    SetCurrentConsoleFontEx(hOut, NULL, &fontex);
 }
 
 int main()
 {
-    SetWindowSize(50, 22);
+    SetWindowSize(50, 20);
     int m, n ,k;
     getData(m, n, k);
 
