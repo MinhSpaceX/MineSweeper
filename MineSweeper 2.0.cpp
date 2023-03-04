@@ -13,7 +13,7 @@ void getData(int& m, int& n, int& k){
     cout << "Enter matrix's rows: ";
     cin >> m;
     cout << endl;
-    while(cin.rdstate() == 4){
+    while(cin.rdstate() == 4 || m > 20){
         cin.clear();
         cin.ignore(INT_MAX, '\n');
         cout << "Not valid, please renter matrix's rows: ";
@@ -27,7 +27,7 @@ void getData(int& m, int& n, int& k){
     cout << "Enter matrix's columns: ";
     cin >> n;
     cout << endl;
-    while(cin.rdstate() == 4){
+    while(cin.rdstate() == 4 || n > 20){
         cin.clear();
         cin.ignore(INT_MAX, '\n');
         cout << "Not valid, please renter matrix's columns: ";
@@ -41,7 +41,7 @@ void getData(int& m, int& n, int& k){
     cout << "Enter number of bombs: ";
     cin >> k;
     cout << endl;
-    while(cin.rdstate() == 4){
+    while(cin.rdstate() == 4 || k > m*n){
         cin.clear();
         cin.ignore(INT_MAX, '\n');
         cout << "Not valid, please renter number of bombs: ";
@@ -200,8 +200,8 @@ void SetWindowSize(SHORT width, SHORT height)
     SetConsoleWindowInfo(hStdout, 1, &WindowSize);
 
     COORD NewSize;
-    NewSize.X = width+5;
-    NewSize.Y = height+5;
+    NewSize.X = width+1;
+    NewSize.Y = height+1;
     SetConsoleScreenBufferSize(hStdout, NewSize);
 
     static CONSOLE_FONT_INFOEX  fontex;
@@ -211,12 +211,12 @@ void SetWindowSize(SHORT width, SHORT height)
     fontex.FontWeight = 700;
     fontex.dwFontSize.X = 30;
     fontex.dwFontSize.Y = 30;
-    SetCurrentConsoleFontEx(hOut, NULL, &fontex);
+    SetCurrentConsoleFontEx(hOut, true, &fontex);
 }
 
 int main()
 {
-    SetWindowSize(50, 20);
+    SetWindowSize(60, 40);
     int m, n ,k;
     getData(m, n, k);
 
