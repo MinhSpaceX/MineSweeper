@@ -149,7 +149,6 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
     bool alive = true;
     int countBox = n*m - k;
     while(countBox){
-        cout << countBox << endl;
         printMap(player_map);
         cout << "Enter a coordinate: ";
         int i, j;
