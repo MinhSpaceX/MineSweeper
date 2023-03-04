@@ -4,7 +4,8 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <sstream>
-#include <windows.h>
+#include <Windows.h>
+#include <conio.h>
 
 using namespace std;
 
@@ -67,26 +68,38 @@ void addCount (vector <vector<int>>& arr, int& i, int& j, int& m, int& n){
     }
 }
 
-template <class T> void printMap(vector <vector<T>> arr){
-    int counts = 0;
+template <class T>void printMap(vector <vector<T>> arr, int& m, int& n){
+    int countN = 0;
     for (auto x:arr){
-        for (auto y:x) cout << setw(4) << y;
-        cout << setw(2) << "     " << counts;
+        for (auto y:x){
+            if (y == "0") SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0A);
+            else if (y == "#") SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0D);
+            else if (y == "-1")SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0C);
+            else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x09);
+            cout << setw(4) << y;
+
+        }
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
+        cout << setw(2) << "     " << countN;
         cout << endl << endl;
-        counts++;
+        countN++;
     }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0f);
     cout << setw((arr[0].size()) * 4) << " " << "     "  << 'x';
     cout << endl;
-    for (int i = 0; i < counts; i++) cout << setw(4) << i;
+    for (int i = 0; i < n; i++) cout << setw(4) << i;
     cout << setw(4) << 'y';
     cout << endl << endl;
 }
 
 void open(vector <vector<int>>& mine_map, vector <vector<string>>& player_map , int i, int j, int& countBox){
     stringstream ss;
+    //int m = 5, n = 6;
     ss << mine_map[i][j];
     ss >> player_map[i][j];
     countBox--;
+    //cout << "Open at: " << i << ' ' << j << " remain: " << countBox << endl;
+    //printMap(player_map, m, n);
 }
 
 bool IsAlive(vector <vector<int>>& mine_map,vector <vector<string>>& player_map , int& i, int& j, int& countBox){
@@ -130,7 +143,7 @@ void spread_virus(vector<vector<int>>& mine_map, vector<vector<string>>& player_
         if (mine_map[i][j+1] == 0) spread_virus(mine_map, player_map, i, j+1, m, n, countBox);
     }
     if (i+1 < m && j-1 >= 0 && mine_map[i+1][j-1] != -1 && player_map[i+1][j-1] == "#"){
-        open(mine_map, player_map, i+1, j, countBox);
+        open(mine_map, player_map, i+1, j-1, countBox);
         if (mine_map[i+1][j-1] == 0) spread_virus(mine_map, player_map, i+1, j-1, m, n, countBox);
     }
     if (i+1 < m && mine_map[i+1][j] != -1 && player_map[i+1][j] == "#"){
@@ -141,15 +154,14 @@ void spread_virus(vector<vector<int>>& mine_map, vector<vector<string>>& player_
         open(mine_map, player_map, i+1, j+1, countBox);
         if (mine_map[i+1][j+1] == 0) spread_virus(mine_map, player_map, i+1, j+1, m, n, countBox);
     }
-
-
 }
 
 void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int& m, int& n, int& k){
     bool alive = true;
     int countBox = n*m - k;
     while(countBox){
-        printMap(player_map);
+        //cout << countBox << endl;
+        printMap(player_map, m, n);
         cout << "Enter a coordinate: ";
         int i, j;
         cin >> i >> j;
@@ -158,7 +170,7 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
         while (cin.rdstate() == 4 || i < 0 || j < 0 || i >= m || j >= n || player_map[i][j] != "#"){
             cin.clear();
             cin.ignore(INT_MAX, '\n');
-            printMap(player_map);
+            printMap(player_map, m, n);
             cout << "Coordinate not valid, please enter again: ";
             cin >> i >> j;
             cout << endl;
@@ -172,13 +184,37 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
         }
         if (mine_map[i][j] == 0) spread_virus(mine_map, player_map, i, j, m, n, countBox);
     }
-    printMap(player_map);
-    if (!alive) cout << "YOU'RE DEAD!";
+    printMap(player_map, m, n);
+    if (!alive) cout << "   YOU'RE DEAD!";
     else cout << "YOU WON!";
+}
+
+void SetWindowSize(SHORT width, SHORT height)
+{
+
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    SMALL_RECT WindowSize;
+    WindowSize.Top = 0;
+    WindowSize.Left = 0;
+    WindowSize.Right = width;
+    WindowSize.Bottom = height;
+
+    SetConsoleWindowInfo(hStdout, 1, &WindowSize);
+    COORD NewSize;
+    NewSize.X = width+1;
+    NewSize.Y = height+1;
+    SetConsoleScreenBufferSize(hStdout, NewSize);
+
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(cfi);
+    cfi.dwFontSize.Y = 30;
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 }
 
 int main()
 {
+    SetWindowSize(50, 22);
     int m, n ,k;
     getData(m, n, k);
 
