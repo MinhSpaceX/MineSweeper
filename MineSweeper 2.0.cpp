@@ -11,7 +11,6 @@ using namespace std;
 void getData(int& m, int& n, int& k){
     cout << "Enter matrix's rows: ";
     cin >> m;
-    cin.ignore(INT_MAX, '\n');
     cout << endl;
     while(cin.rdstate() == 4){
         cin.clear();
@@ -21,11 +20,11 @@ void getData(int& m, int& n, int& k){
         cout << endl;
     }
     cin.clear();
+    cin.ignore(INT_MAX, '\n');
     system("cls");
 
     cout << "Enter matrix's columns: ";
     cin >> n;
-    cin.ignore(INT_MAX, '\n');
     cout << endl;
     while(cin.rdstate() == 4){
         cin.clear();
@@ -35,11 +34,11 @@ void getData(int& m, int& n, int& k){
         cout << endl;
     }
     cin.clear();
+    cin.ignore(INT_MAX, '\n');
     system("cls");
 
     cout << "Enter number of bombs: ";
     cin >> k;
-    cin.ignore(INT_MAX, '\n');
     cout << endl;
     while(cin.rdstate() == 4){
         cin.clear();
@@ -49,7 +48,7 @@ void getData(int& m, int& n, int& k){
         cout << endl;
     }
     cin.clear();
-
+    cin.ignore(INT_MAX, '\n');
     system("cls");
 }
 
@@ -150,23 +149,24 @@ void game(vector<vector<int>>& mine_map, vector<vector<string>>& player_map, int
     bool alive = true;
     int countBox = n*m - k;
     while(countBox){
+        cout << countBox << endl;
         printMap(player_map);
         cout << "Enter a coordinate: ";
         int i, j;
         cin >> i >> j;
-        cin.ignore(INT_MAX, '\n');
         system("cls");
-        while (!cin.rdstate() && i < 0 || j < 0 || i >= m || j >= n || player_map[i][j] != "#"){
+
+        while (cin.rdstate() == 4 || i < 0 || j < 0 || i >= m || j >= n || player_map[i][j] != "#"){
             cin.clear();
             cin.ignore(INT_MAX, '\n');
             printMap(player_map);
             cout << "Coordinate not valid, please enter again: ";
             cin >> i >> j;
-            cin.ignore(INT_MAX, '\n');
             cout << endl;
             system("cls");
         }
-
+        cin.clear();
+        cin.ignore(INT_MAX, '\n');
         if (!IsAlive(mine_map, player_map, i, j, countBox)){
             alive = false;
             break;
